@@ -6,12 +6,13 @@ It is written in Node.js simply because that's the language I'm the most confort
 
 Notable differences compared to `sherlock` (at time of writing):
 
- - Tests all services concurrently
+ - Tests all services concurrently (asynchronous/"multithreaded")
+ - Checks whether accounts exists by looking at the HTTP response status code (instead of HTML parsing)
  - Follows HTTP(S) redirections
  - Command line switches allow usage in an external script
 
 ### Available command line switches
- - `--help`: Display this message
+ - `--help`: Display CLI switches & a link to the GitHub repo
  - `--version` or `-v`: Print version
  - `--name user` or `-n user`: Specify a username to search for (remove interactive prompt)
  - `--batch` or `-b`: Output results in raw minified JSON
