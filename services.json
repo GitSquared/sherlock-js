@@ -72,5 +72,6 @@
   "Flickr": "https://www.flickr.com/people/{}",
   "WordPress": "https://{}.wordpress.com",
   "Unsplash": "https://unsplash.com/@{}",
-  "Pexels": "https://www.pexels.com/@{}"
+  "Pexels": "https://www.pexels.com/@{}",
+  "devRant": "https://devrant.com/users/{}"
 }
