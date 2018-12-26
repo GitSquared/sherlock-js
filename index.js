@@ -43,7 +43,7 @@ Available command line switches:
     --version or -v: Print version
     --name user or -n user: Specify a username to search for (remove interactive prompt)
     --batch or -b: Output results in minified JSON
-    --output file.txt or -o file.txt: Print minified JSON results in a file
+    --output res.json or -o res.json: Print minified JSON results in a file
 
 Additional info available at https://github.com/GitSquared/sherlock-js
         `);
