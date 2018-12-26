@@ -1,5 +1,11 @@
 # Sherlock.js
 
+<p align="center">
+  <br>
+  <img alt="Screenshot" src="https://github.com/GitSquared/sherlock-js/raw/master/screenshot.png" />
+  <br><br>
+</p>
+
 This is a "remake" of the original [sherlock](https://github.com/sdushantha/sherlock) written in Python by [sdushantha](https://github.com/sdushantha) that I made mostly because I was bored and found that it had some flaws.
 
 It is written in Node.js simply because that's the language I'm the most confortable with, but that's probably not the best choice and I'll see if I can make a Rust version or something.
