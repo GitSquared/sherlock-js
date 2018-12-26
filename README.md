@@ -16,3 +16,4 @@ Notable differences compared to `sherlock` (at time of writing):
  - `--version` or `-v`: Print version
  - `--name user` or `-n user`: Specify a username to search for (remove interactive prompt)
  - `--batch` or `-b`: Output results in raw minified JSON
+ - `--output file.txt` or `-o file.txt`: Print minified JSON results in a file

@@ -19,14 +19,17 @@
         '--version': Boolean,
         '--name': String,
         '--batch': Boolean,
+        '--output': String,
 
         '-v': '--version',
         '-n': '--name',
-        '-b': '--batch'
+        '-b': '--batch',
+        '-o': '--output'
     });
 
     process.on("beforeExit", (code) => {
-        if (code === 0 && args["--batch"] && global.finalResults) log(JSON.stringify(global.finalResults));
+        if (code === 0 && args["--batch"] && !args["--output"] && global.finalResults) log(JSON.stringify(global.finalResults));
+        if (code === 0 && args["--output"] && global.finalResults) require("fs").writeFileSync(require("path").join(process.cwd(), args["--output"]), JSON.stringify(global.finalResults));
     });
 
     if (args["--version"]) {
@@ -39,11 +42,18 @@ Available command line switches:
     --help: Display this message
     --version or -v: Print version
     --name user or -n user: Specify a username to search for (remove interactive prompt)
-    --batch or -b: Output results in raw minified JSON
+    --batch or -b: Output results in minified JSON
+    --output file.txt or -o file.txt: Print minified JSON results in a file
 
 Additional info available at https://github.com/GitSquared/sherlock-js
         `);
         process.exit(0);
+    }
+
+    if (args["--name"]) {
+        scan(args["--name"]);
+    } else {
+        prompt().then(scan);
     }
 
     async function prompt() {
@@ -122,11 +132,5 @@ Additional info available at https://github.com/GitSquared/sherlock-js
             });
             worker.send(url);
         });
-    }
-
-    if (args["--name"]) {
-        scan(args["--name"]);
-    } else {
-        prompt().then(scan);
     }
 })();
