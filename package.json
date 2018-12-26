@@ -1,0 +1,24 @@
+{
+  "name": "sherlock",
+  "version": "1.0.0",
+  "description": "Find usernames across over 75 social networks - NodeJS remake of sdushantha/sherlock",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GitSquared/sherlock-js.git"
+  },
+  "author": "Squared <squared@codebrew.fr> (https://squared.codebrew.fr)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GitSquared/sherlock-js/issues"
+  },
+  "homepage": "https://github.com/GitSquared/sherlock-js#readme",
+  "dependencies": {
+    "arg": "^3.0.0",
+    "chalk": "^2.4.1"
+  }
+}
