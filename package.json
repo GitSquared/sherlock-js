@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "Find usernames across over 75 social networks - NodeJS remake of sdushantha/sherlock",
   "main": "index.js",
+  "bin": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "pkg -c package.json -t latest-linux-x64,latest-linux-x86,latest-linux-armv7,latest-macos-x64,latest-win-x64,latest-win-x86 index.js"
   },
   "repository": {
     "type": "git",
