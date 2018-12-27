@@ -14,9 +14,9 @@ Notable differences compared to `sherlock` (at time of writing):
 
  - [0 dependencies pre-built binaries for Windows/macOS/Linux](https://github.com/GitSquared/sherlock-js/releases)
  - Tests all services concurrently (asynchronous/"multithreaded")
- - Checks whether accounts exists by looking at the HTTP response status code (instead of HTML parsing)
+ - Checks whether accounts exists by looking at both the HTTP response status code and stripping down the HTML code to search if the desired username is written on the page
  - Follows HTTP(S) redirections
- - Command line switches allow usage in an external script
+ - Command line switches allow piping output, "batch" mode for use via an external script
 
 ### Available command line switches
  - `--help`: Display CLI switches & a link to the GitHub repo

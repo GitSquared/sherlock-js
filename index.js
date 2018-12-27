@@ -78,6 +78,8 @@ Additional info available at https://github.com/GitSquared/sherlock-js
             try {
                 rl.question(chalk.green.bold("[>] Input username: "), answer => {
                     rl.close();
+                    log("");
+
                     resolve(answer);
                 });
             } catch(e) { reject(e); }
@@ -130,7 +132,7 @@ Additional info available at https://github.com/GitSquared/sherlock-js
                     results[key] = "Error";
                 }
             });
-            worker.send(url);
+            worker.send(url+" "+name);
         });
     }
 })();
