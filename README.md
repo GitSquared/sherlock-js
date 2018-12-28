@@ -24,3 +24,14 @@ Notable differences compared to `sherlock` (at time of writing):
  - `--name user` or `-n user`: Specify a username to search for (remove interactive prompt)
  - `--batch` or `-b`: Output results in raw minified JSON
  - `--output res.json` or `-o res.json`: Print minified JSON results in a file
+
+### Usage example
+Using sherlock.js, it's easy to batch-process a number of usernames by simply using CLI options and `xargs` on Linux.
+
+Assuming we have a `names.txt` file containing one username per line, running:
+
+```
+/bin/cat names.txt | xargs -l ./sherlockjs --batch -n
+```
+
+...will scan each name in the file in order, and print a machine-readable JSON output to `stdout` on each test.
