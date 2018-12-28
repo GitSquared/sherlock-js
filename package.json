@@ -9,6 +9,10 @@
     "start": "node index.js",
     "build": "pkg -c package.json -t latest-linux-x64,latest-linux-x86,latest-macos-x64,latest-win-x64,latest-win-x86 index.js"
   },
+  "pkg": {
+    "scripts": ["httpsWorker.js", "index.js"],
+    "assets": ["services.json"]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GitSquared/sherlock-js.git"

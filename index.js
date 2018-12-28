@@ -1,11 +1,12 @@
 (async function() {
     const log = console.log;
     const arg = require("arg");
+    const path = require("path");
     const readline = require("readline");
     const chalk = require("chalk");
     const {fork} = require("child_process");
 
-    const services = require("./services.json");
+    const services = require(path.join(__dirname, "services.json"));
 
     function errorAndDie(err) {
         log(chalk.red.bold(`[!] Fatal error: ${err.message || err}`));
@@ -124,7 +125,7 @@ Additional info available at https://github.com/GitSquared/sherlock-js
 
             results[key] = "Checking...";
 
-            let worker = fork("./httpsWorker.js");
+            let worker = fork(path.join(__dirname, "httpsWorker.js"));
             worker.on("message", r => {
                 if (typeof r === "boolean") {
                     results[key] = r ? url : "Not Found!";
