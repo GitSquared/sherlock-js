@@ -73,5 +73,6 @@
   "WordPress": "https://{}.wordpress.com",
   "Unsplash": "https://unsplash.com/@{}",
   "Pexels": "https://www.pexels.com/@{}",
-  "devRant": "https://devrant.com/users/{}"
+  "devRant": "https://devrant.com/users/{}",
+  "MyAnimeList": "https://myanimelist.net/profile/{}"
 }
