@@ -34,7 +34,7 @@
     });
 
     if (args["--version"]) {
-        log("Sherlock.js v1.0.0");
+        log("Sherlock.js v1.1.1");
         process.exit(0);
     }
     if (args["--help"]) {
