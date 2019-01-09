@@ -29,6 +29,14 @@
     });
 
     process.on("beforeExit", (code) => {
+        if (args["--batch"] && global.finalResults) {
+            Object.keys(global.finalResults).forEach(site => {
+                if (global.finalResults[site] === "Not Found!") {
+                    delete global.finalResults[site];
+                }
+            });
+        }
+
         if (code === 0 && args["--batch"] && !args["--output"] && global.finalResults) log(JSON.stringify(global.finalResults));
         if (code === 0 && args["--output"] && global.finalResults) require("fs").writeFileSync(require("path").join(process.cwd(), args["--output"]), JSON.stringify(global.finalResults));
     });
