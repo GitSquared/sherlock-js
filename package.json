@@ -10,8 +10,13 @@
     "build": "pkg -c package.json -t latest-linux-x64,latest-linux-x86,latest-macos-x64,latest-win-x64,latest-win-x86 index.js"
   },
   "pkg": {
-    "scripts": ["httpsWorker.js", "index.js"],
-    "assets": ["services.json"]
+    "scripts": [
+      "httpsWorker.js",
+      "index.js"
+    ],
+    "assets": [
+      "services.json"
+    ]
   },
   "repository": {
     "type": "git",
@@ -24,7 +29,7 @@
   },
   "homepage": "https://github.com/GitSquared/sherlock-js#readme",
   "dependencies": {
-    "arg": "^3.0.0",
-    "chalk": "^2.4.1"
+    "arg": "^4.1.1",
+    "chalk": "^2.4.2"
   }
 }
