@@ -2,6 +2,7 @@
   "name": "sherlockjs",
   "version": "2.0.0",
   "description": "Find usernames across over 75 social networks - NodeJS remake of sdushantha/sherlock",
+  "private": true,
   "main": "index.js",
   "bin": "index.js",
   "scripts": {
