@@ -38,7 +38,7 @@ jobs:
       run: |
         npm install
         npm install --dev
-        npm run build-ci
+        npm run build
         npm test
       env:
         CI: true
