@@ -19,45 +19,76 @@
         '--help': Boolean,
         '--version': Boolean,
         '--name': String,
-        '--batch': Boolean,
-        '--output': String,
+        '--only-found': Boolean,
+        '--json': Boolean,
+        '--csv': Boolean,
+        '--pretty-json': Boolean,
 
         '-v': '--version',
         '-n': '--name',
-        '-b': '--batch',
-        '-o': '--output'
+        '-f': '--only-found',
+        '-j': '--json',
+        '-c': '--csv'
     });
 
     process.on("beforeExit", (code) => {
-        if (args["--batch"] && global.finalResults) {
+        if (code === 0 && args["--json"] && global.finalResults) log(JSON.stringify(global.finalResults));
+        if (code === 0 && args["--pretty-json"] && global.finalResults) log(JSON.stringify(global.finalResults, "", 2));
+        if (code === 0 && args["--csv"] && global.finalResults) {
+            log("Website, Account");
             Object.keys(global.finalResults).forEach(site => {
-                if (global.finalResults[site] === "Not Found!") {
-                    delete global.finalResults[site];
-                }
+                log(`"${site}",${global.finalResults[site]}`);
             });
         }
-
-        if (code === 0 && args["--batch"] && !args["--output"] && global.finalResults) log(JSON.stringify(global.finalResults));
-        if (code === 0 && args["--output"] && global.finalResults) require("fs").writeFileSync(require("path").join(process.cwd(), args["--output"]), JSON.stringify(global.finalResults));
     });
 
     if (args["--version"]) {
-        log("Sherlock.js v1.1.1");
+        log("Sherlock.js v2.0.0");
+        log(`Bundled list: ${Object.keys(services).length} account providers.`);
         process.exit(0);
     }
     if (args["--help"]) {
-        log(`
-Available command line switches:
-    --help: Display this message
-    --version or -v: Print version
-    --name user or -n user: Specify a username to search for (remove interactive prompt)
-    --batch or -b: Output results in minified JSON
-    --output res.json or -o res.json: Print minified JSON results in a file
+        log(chalk`
+{bold Sherlock.js} - Search for usernames across online services.
 
-Additional info available at https://github.com/GitSquared/sherlock-js
-        `);
+Run without any arguments to show an interactive prompt and pretty-print
+results as soon as they are found.
+
+{underline Available command line switches:}
+  General:
+    {yellow.italic --help}:                  Display this message
+    {yellow.italic --version} or {yellow.italic -v}:         Print version
+  Options:
+    {yellow.italic --name} {blue.bold user} or {yellow.italic -n} {blue.bold user}:  Specify a username to search for (remove prompt)
+    {yellow.italic --only-found} or {yellow.italic -f}:      Only output when username was found (skip errors/404s)
+  Output formats:
+    {yellow.italic --json} or {yellow.italic -j}:            Output results in minified JSON
+    {yellow.italic --csv} or {yellow.italic -c}:             Output results in CSV format
+    {yellow.italic --pretty-json}:           Output results in whitespaced JSON
+
+{underline Examples:}
+  Search for all accounts named Smith, display live results:
+    {bold ./sherlockjs} {yellow.italic --name} {blue.bold Smith}
+  Get a human-readable file with links to all accounts named Smith:
+    {bold ./sherlockjs} {yellow.italic --pretty-json --only-found -n} {blue.bold Smith} {green >} {blue.bold smith_accounts.json}
+
+You can use sherlockjs non-interactive options combined with common shell utilities to
+easily batch-process lists of users, and leverage sherlockjs' multithreaded design to
+create powerful, fast, extensive one-liner searches.
+
+For instance, to batch-process a list of usernames, output each user's accounts in
+separate .csv files, and start all sherlockjs searches simultaneously (careful with
+the potential # of threads!):
+    {bold cat} {blue.bold users.txt} {green.bold |} {bold xargs} {yellow.italic -r -P} {blue.bold 0} {yellow.italic -I} {blue.bold %} {bold sh} {yellow.italic -c} {magenta "}{bold ./sherlockjs} {yellow.italic -cf -n} {blue.bold %} {green >} {blue.bold accounts_%.csv}{magenta "}
+
+The list of account providers used by sherlockjs is bundled and does not auto-update.
+Check the repo link mentioned below for updates.
+
+{italic More on GitHub: {blue https://github.com/GitSquared/sherlock-js}}`);
         process.exit(0);
     }
+
+    global.liveOutput = (args["--json"] || args["--pretty-json"] || args["--csv"]) ? false : true;
 
     if (args["--name"]) {
         scan(args["--name"]);
@@ -112,16 +143,17 @@ Additional info available at https://github.com/GitSquared/sherlock-js
                         // log(chalk.bold("[")+chalk.bold.yellow("*")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+chalk.dim(value));
                         break;
                     case "Not Found!":
-                        if (!args["--batch"]) log(chalk.bold("[")+chalk.bold.red("-")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+chalk.bold.yellow(value));
+                        if (global.liveOutput && !args["--only-found"]) log(chalk.bold("[")+chalk.bold.red("-")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+chalk.bold.yellow(value));
                         break;
                     case "Error":
-                        if (!args["--batch"]) log(chalk.bold("[")+chalk.bold.red("X")+chalk.bold("]")+" "+chalk.bold.red(prop+": ")+chalk.bold.red(value));
+                        if (global.liveOutput && !args["--only-found"]) log(chalk.bold("[")+chalk.bold.red("X")+chalk.bold("]")+" "+chalk.bold.red(prop+": ")+chalk.bold.red(value));
                         break;
                     default:
-                        if (!args["--batch"]) log(chalk.bold("[")+chalk.bold.green("+")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+value);
+                        if (global.liveOutput) log(chalk.bold("[")+chalk.bold.green("+")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+value);
+                        if (args["--only-found"]) target[prop] = value;
                 }
 
-                target[prop] = value;
+                if (!args["--only-found"]) target[prop] = value;
             },
             get: (target, prop) => {
                 return target[prop];
