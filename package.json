@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node index.js",
     "build": "pkg package.json -o sherlockjs",
+    "build-all": "pkg -t latest-linux-x64,latest-macos-x64,latest-win-x64 package.json --out-path dist/",
     "build-ci": "pkg -bd package.json --out-path dist/",
     "lint": "xo",
     "test": "./sherlockjs -cfn GitSquared"
