@@ -14,7 +14,8 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: |
+    - name: Lint
+      run: |
         npm install
         npm run lint
       env:
@@ -32,8 +33,10 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         version: ${{ matrix.node_version }}
-    - run: |
+    - name: Build
+      run: |
         npm install
+        npm install --dev
         npm run build-ci
         npm test
       env:
