@@ -24,6 +24,7 @@ jobs:
   build:
     name: Build and test binary for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    needs: lint
     strategy:
       matrix:
         node_version: [12]
