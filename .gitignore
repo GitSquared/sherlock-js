@@ -3,7 +3,8 @@
 # Edit at https://www.gitignore.io/?templates=node
 
 # binaries
-sherlock*
+sherlockjs
+dist/
 
 ### Node ###
 # Logs
