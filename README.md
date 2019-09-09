@@ -16,22 +16,38 @@ Notable differences compared to `sherlock` (at time of writing):
  - Tests all services concurrently (asynchronous/"multithreaded")
  - Checks whether accounts exists by looking at both the HTTP response status code and stripping down the HTML code to search if the desired username is written on the page
  - Follows HTTP(S) redirections
- - Command line switches allow piping output, "batch" mode for use via an external script
+ - Command line switches allow piping output in various formats; designed to be used with `xargs`
 
 ### Available command line switches
- - `--help`: Display CLI switches & a link to the GitHub repo
- - `--version` or `-v`: Print version
- - `--name user` or `-n user`: Specify a username to search for (remove interactive prompt)
- - `--batch` or `-b`: Output results in raw minified JSON
- - `--output res.json` or `-o res.json`: Print minified JSON results in a file
+ - General:
+   - --help:                  Display this message
+   - --version or -v:         Print version
+ - Options:
+   - --name user or -n user:  Specify a username to search for (remove prompt)
+   - --only-found or -f:      Only output when username was found (skip errors/404s)
+ - Output formats:
+   - --json or -j:            Output results in minified JSON
+   - --csv or -c:             Output results in CSV format
+   - --pretty-json:           Output results in whitespaced JSON
 
-### Usage example
-Using sherlock.js, it's easy to batch-process a number of usernames by simply using CLI options and `xargs` on Linux.
-
-Assuming we have a `names.txt` file containing one username per line, running:
-
+### Examples:
+Search for all accounts named Smith, display live results:
 ```
-/bin/cat names.txt | xargs -l ./sherlockjs --batch -n
+./sherlockjs --name Smith
 ```
 
-...will scan each name in the file in order, and print a machine-readable JSON output to `stdout` on each test.
+Get a human-readable file with links to all accounts named Smith:
+```
+./sherlockjs --pretty-json --only-found -n Smith > smith_accounts.json
+```
+
+You can use sherlockjs non-interactive options combined with common shell utilities to
+easily batch-process lists of users, and leverage sherlockjs' multithreaded design to
+create powerful, fast, extensive one-liner searches.
+
+For instance, to batch-process a list of usernames, output each user's accounts in
+separate .csv files, and start all sherlockjs searches simultaneously (careful with
+the potential # of threads!):
+```
+cat users.txt | xargs -r -P 0 -I % sh -c "./sherlockjs -cf -n % > accounts_%.csv"
+```
