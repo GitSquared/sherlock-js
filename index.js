@@ -35,7 +35,7 @@
         if (code === 0 && args["--json"] && global.finalResults) log(JSON.stringify(global.finalResults));
         if (code === 0 && args["--pretty-json"] && global.finalResults) log(JSON.stringify(global.finalResults, "", 2));
         if (code === 0 && args["--csv"] && global.finalResults) {
-            log("Website, Account");
+            log("Website,Account");
             Object.keys(global.finalResults).forEach(site => {
                 log(`"${site}",${global.finalResults[site]}`);
             });
