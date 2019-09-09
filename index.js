@@ -1,54 +1,62 @@
-(async function() {
-    const log = console.log;
-    const arg = require("arg");
-    const path = require("path");
-    const readline = require("readline");
-    const chalk = require("chalk");
-    const {fork} = require("child_process");
+(async function () {
+	const {log} = console;
+	const arg = require('arg');
+	const path = require('path');
+	const readline = require('readline');
+	const chalk = require('chalk');
+	const {fork} = require('child_process');
 
-    const services = require(path.join(__dirname, "services.json"));
+	const services = require(path.join(__dirname, 'services.json'));
 
-    function errorAndDie(err) {
-        log(chalk.red.bold(`[!] Fatal error: ${err.message || err}`));
-        process.exit(1);
-    }
-    process.on("uncaughtException", errorAndDie);
-    process.on("unhandledRejection", errorAndDie);
+	function errorAndDie(err) {
+		log(chalk.red.bold(`[!] Fatal error: ${err.message || err}`));
+		process.exit(1);
+	}
 
-    const args = arg({
-        '--help': Boolean,
-        '--version': Boolean,
-        '--name': String,
-        '--only-found': Boolean,
-        '--json': Boolean,
-        '--csv': Boolean,
-        '--pretty-json': Boolean,
+	process.on('uncaughtException', errorAndDie);
+	process.on('unhandledRejection', errorAndDie);
 
-        '-v': '--version',
-        '-n': '--name',
-        '-f': '--only-found',
-        '-j': '--json',
-        '-c': '--csv'
-    });
+	const args = arg({
+		'--help': Boolean,
+		'--version': Boolean,
+		'--name': String,
+		'--only-found': Boolean,
+		'--json': Boolean,
+		'--csv': Boolean,
+		'--pretty-json': Boolean,
 
-    process.on("beforeExit", (code) => {
-        if (code === 0 && args["--json"] && global.finalResults) log(JSON.stringify(global.finalResults));
-        if (code === 0 && args["--pretty-json"] && global.finalResults) log(JSON.stringify(global.finalResults, "", 2));
-        if (code === 0 && args["--csv"] && global.finalResults) {
-            log("Website,Account");
-            Object.keys(global.finalResults).forEach(site => {
-                log(`"${site}",${global.finalResults[site]}`);
-            });
-        }
-    });
+		'-v': '--version',
+		'-n': '--name',
+		'-f': '--only-found',
+		'-j': '--json',
+		'-c': '--csv'
+	});
 
-    if (args["--version"]) {
-        log("Sherlock.js v2.0.0");
-        log(`Bundled list: ${Object.keys(services).length} account providers.`);
-        process.exit(0);
-    }
-    if (args["--help"]) {
-        log(chalk`
+	process.on('beforeExit', code => {
+		if (code === 0 && args['--json'] && global.finalResults) {
+			log(JSON.stringify(global.finalResults));
+		}
+
+		if (code === 0 && args['--pretty-json'] && global.finalResults) {
+			log(JSON.stringify(global.finalResults, '', 2));
+		}
+
+		if (code === 0 && args['--csv'] && global.finalResults) {
+			log('Website,Account');
+			Object.keys(global.finalResults).forEach(site => {
+				log(`"${site}",${global.finalResults[site]}`);
+			});
+		}
+	});
+
+	if (args['--version']) {
+		log('Sherlock.js v2.0.0');
+		log(`Bundled list: ${Object.keys(services).length} account providers.`);
+		process.exit(0);
+	}
+
+	if (args['--help']) {
+		log(chalk`
 {bold Sherlock.js} - Search for usernames across online services.
 
 Run without any arguments to show an interactive prompt and pretty-print
@@ -85,19 +93,19 @@ The list of account providers used by sherlockjs is bundled and does not auto-up
 Check the repo link mentioned below for updates.
 
 {italic More on GitHub: {blue https://github.com/GitSquared/sherlock-js}}`);
-        process.exit(0);
-    }
+		process.exit(0);
+	}
 
-    global.liveOutput = (args["--json"] || args["--pretty-json"] || args["--csv"]) ? false : true;
+	global.liveOutput = !((args['--json'] || args['--pretty-json'] || args['--csv']));
 
-    if (args["--name"]) {
-        scan(args["--name"]);
-    } else {
-        prompt().then(scan);
-    }
+	if (args['--name']) {
+		scan(args['--name']);
+	} else {
+		prompt().then(scan);
+	}
 
-    async function prompt() {
-        log(chalk.bold(`
+	async function prompt() {
+		log(chalk.bold(`
                                                           ."""-.
                                                          /      \\
  ____  _               _            _                    |  _..--'-.
@@ -109,71 +117,86 @@ Check the repo link mentioned below for updates.
                                             |___|    /      \`--.|   \\__/
         `));
 
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
+		const rl = readline.createInterface({
+			input: process.stdin,
+			output: process.stdout
+		});
 
-        let name = await new Promise((resolve, reject) => {
-            try {
-                rl.question(chalk.green.bold("[>] Input username: "), answer => {
-                    rl.close();
-                    log("");
+		let name = await new Promise((resolve, reject) => {
+			try {
+				rl.question(chalk.green.bold('[>] Input username: '), answer => {
+					rl.close();
+					log('');
 
-                    resolve(answer);
-                });
-            } catch(e) { reject(e); }
-        });
+					resolve(answer);
+				});
+			} catch (error) {
+				reject(error);
+			}
+		});
 
-        name = name.trim();
+		name = name.trim();
 
-        if (name.match(/^[^ /&?]+$/g)) {
-            return name;
-        } else {
-            throw new Error("Name contains unauthorised characters. Cannot proceed.");
-        }
-    }
+		if (name.match(/^[^ /&?]+$/g)) {
+			return name;
+		}
 
-    async function scan(name) {
-        global.finalResults = {};
-        let results = new Proxy(global.finalResults, {
-            set: (target, prop, value) => {
-                switch(value) {
-                    case "Checking...":
-                        // log(chalk.bold("[")+chalk.bold.yellow("*")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+chalk.dim(value));
-                        break;
-                    case "Not Found!":
-                        if (global.liveOutput && !args["--only-found"]) log(chalk.bold("[")+chalk.bold.red("-")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+chalk.bold.yellow(value));
-                        break;
-                    case "Error":
-                        if (global.liveOutput && !args["--only-found"]) log(chalk.bold("[")+chalk.bold.red("X")+chalk.bold("]")+" "+chalk.bold.red(prop+": ")+chalk.bold.red(value));
-                        break;
-                    default:
-                        if (global.liveOutput) log(chalk.bold("[")+chalk.bold.green("+")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+value);
-                        if (args["--only-found"]) target[prop] = value;
-                }
+		throw new Error('Name contains unauthorised characters. Cannot proceed.');
+	}
 
-                if (!args["--only-found"]) target[prop] = value;
-            },
-            get: (target, prop) => {
-                return target[prop];
-            }
-        });
+	async function scan(name) {
+		global.finalResults = {};
+		const results = new Proxy(global.finalResults, {
+			set: (target, prop, value) => {
+				switch (value) {
+					case 'Checking...':
+						// Log(chalk.bold("[")+chalk.bold.yellow("*")+chalk.bold("]")+" "+chalk.bold.green(prop+": ")+chalk.dim(value));
+						break;
+					case 'Not Found!':
+						if (global.liveOutput && !args['--only-found']) {
+							log(chalk.bold('[') + chalk.bold.red('-') + chalk.bold(']') + ' ' + chalk.bold.green(prop + ': ') + chalk.bold.yellow(value));
+						}
 
-        Object.keys(services).forEach(key => {
-            let url = services[key].replace("{}", name);
+						break;
+					case 'Error':
+						if (global.liveOutput && !args['--only-found']) {
+							log(chalk.bold('[') + chalk.bold.red('X') + chalk.bold(']') + ' ' + chalk.bold.red(prop + ': ') + chalk.bold.red(value));
+						}
 
-            results[key] = "Checking...";
+						break;
+					default:
+						if (global.liveOutput) {
+							log(chalk.bold('[') + chalk.bold.green('+') + chalk.bold(']') + ' ' + chalk.bold.green(prop + ': ') + value);
+						}
 
-            let worker = fork(path.join(__dirname, "httpsWorker.js"));
-            worker.on("message", r => {
-                if (typeof r === "boolean") {
-                    results[key] = r ? url : "Not Found!";
-                } else {
-                    results[key] = "Error";
-                }
-            });
-            worker.send(url+" "+name);
-        });
-    }
+						if (args['--only-found']) {
+							target[prop] = value;
+						}
+				}
+
+				if (!args['--only-found']) {
+					target[prop] = value;
+				}
+			},
+			get: (target, prop) => {
+				return target[prop];
+			}
+		});
+
+		Object.keys(services).forEach(key => {
+			const url = services[key].replace('{}', name);
+
+			results[key] = 'Checking...';
+
+			const worker = fork(path.join(__dirname, 'https-worker.js'));
+			worker.on('message', r => {
+				if (typeof r === 'boolean') {
+					results[key] = r ? url : 'Not Found!';
+				} else {
+					results[key] = 'Error';
+				}
+			});
+			worker.send(url + ' ' + name);
+		});
+	}
 })();
